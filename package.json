@@ -1,0 +1,11 @@
+{
+	"name": "sfproxy",
+	"description": "Simple & fast debugging proxy for node.",
+	"version": "0.0.1",
+	"keywords": ["proxy", "debugging", "simple", "configurable", "fast"],
+	"bugs":{ "url" : "https://github.com/anacierdem/simpleFastProxy/issues"
+			, "email" : "anacierdem@gmail.com"
+	},
+	"homepage": "https://github.com/anacierdem/simpleFastProxy",
+	"license": { "license" : "MIT" }
+}
