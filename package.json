@@ -1,5 +1,5 @@
 {
-	"name": "sfproxy",
+	"name": "sfp",
 	"description": "Simple & fast debugging proxy for node.",
 	"version": "0.0.1",
 	"author": { "name" : "Ali Naci Erdem"
@@ -12,11 +12,11 @@
 	},
 	"homepage": "https://github.com/anacierdem/simpleFastProxy",
 	"license": { "license" : "MIT" },
-	"files": {
-		"sfproxy.js"
-	},
-	"main": "sfproxy",
-	"bin" : { "sfproxy" : "./sfproxy.js" },
+	"files": [
+		"sfp.js"
+	],
+	"main": "sfp",
+	"bin" : { "sfp" : "./sfp.js" },
 	"repository" :
 	{ "type" : "git"
 		, "url" : "https://github.com/anacierdem/simpleFastProxy.git"
