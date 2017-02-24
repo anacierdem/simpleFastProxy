@@ -150,6 +150,8 @@ Modify response body (use search & replace instead of name/value);
 		}
 	]
     
+## Other Options:
+
 There are few additional options inside proxy.js;
 
 Set port and temporary file folder;
@@ -162,7 +164,7 @@ Set replacement placeholders;
     var REPLACEMENT_PLACEHOLDER_OPEN = "{~{";
     var REPLACEMENT_PLACEHOLDER_CLOSE = "}~}";
 
-Set a secondary proxy;
+Set a secondary proxy (requests will be further forwarded to this endpoint);
 
     var PROXY_HOST = null;
     var PROXY_PORT = null;
