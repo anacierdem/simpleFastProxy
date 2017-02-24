@@ -13,123 +13,144 @@ The proxy gets a rule list as an array. Init the proxy with this array;
 
     var myProxy = new proxy.Proxy(mainRuleList);
 
-See main.js for an example.
-Each item can have a "match" field that will match a request specific to that rule item. Multiple matches are ORed.
+Each item in the array can have a "match" field that will match a request specific to that rule item. Multiple matches are ORed. The
 
-      match: [
+    {
+        //Optional match property
+        match: [
+            {
+               ...
+            },
+            ...
+        ],
+        //Action items when the match is valid
+        //(modify, delete, cache)
+        ...
+    }
+
+For example to match a request header;
+    
+
+    match: [
         {
-          type: "requestHeader",
-          name: "origin",
-          value: ""
+            type: "requestHeader",
+            name: "origin",
+            value: "..."
         }
-      ]
+    ]
+    
+or match a request header without using a value;
+    
+    match: [
+		{
+			type: "requestHeader",
+			name: "range"
+		}
+	]
+    
+Allowed match types are currently; requestHeader, responseHeader or url.
+      
+## Action Items:
       
 You can modify a header using placeholders from request headers. Inject origin for CORS, or allow credentials;
 
-      modify: [
-        {
-          type: "responseHeader",
-          name: "access-control-allow-origin",
-          value: '{~{requestHeader.origin}~}'
-        },
-        {
-          type: "responseHeader",
-          name: "access-control-allow-credentials",
-          value: 'true'
-        }
-      ]
-    
+	modify: [
+		{
+			type: "responseHeader",
+			name: "access-control-allow-origin",
+			value: '{~{requestHeader.origin}~}'
+		},
+		{
+			type: "responseHeader",
+			name: "access-control-allow-credentials",
+			value: 'true'
+		}
+	]
+
 Inject origin;
 
-      modify: [
-        {
-          type: "requestHeader",
-          name: "origin",
-          value: ''
-        },
-        {
-          type: "requestHeader",
-          name: "referer",
-          value: ''
-        }
-      ]
+	modify: [
+		{
+			type: "requestHeader",
+			name: "origin",
+			value: ''
+		},
+		{
+			type: "requestHeader",
+			name: "referer",
+			value: ''
+		}
+	]
     
 Injecting a cookie;
 
-      modify: [
-        {
-          type: "requestHeader",
-          name: "cookie",
-          value: ''
-        }
-      ]
+	modify: [
+		{
+			type: "requestHeader",
+			name: "cookie",
+			value: ''
+		}
+	]
     
 Prevent cache;
 
-      modify: [
-        {
-          type: "responseHeader",
-          name: "cache-control",
-          value: 'no-cache, no-store, must-revalidate'
-        },
-        {
-          type: "responseHeader",
-          name: "pragma",
-          value: 'no-cache'
-        },
-        {
-          type: "responseHeader",
-          name: "expires",
-          value: '0'
-        }
-      ]
-      
+	modify: [
+		{
+			type: "responseHeader",
+			name: "cache-control",
+			value: 'no-cache, no-store, must-revalidate'
+		},
+		{
+			type: "responseHeader",
+			name: "pragma",
+			value: 'no-cache'
+		},
+		{
+			type: "responseHeader",
+			name: "expires",
+			value: '0'
+		}
+	]
+		  
 Remove headers;
 
-      delete: [
-        {
-          type: "responseHeader",
-          name: "x-frame-options",
-          value: ''
-        },
-        {
-          type: "responseHeader",
-          name: "accept-ranges",
-          value: ''
-        }
-      ]
+	delete: [
+		{
+			type: "responseHeader",
+			name: "x-frame-options",
+			value: ''
+		},
+		{
+			type: "responseHeader",
+			name: "accept-ranges",
+			value: ''
+		}
+	]
     
 Remove accept-ranges response header if a range request arrives;
 
-      match: [
-        {
-          type: "requestHeader",
-          name: "range"
-        }
-      ],
-      modify: [
-        {
-          type: "responseHeader",
-          name: "accept-ranges",
-          value: 'none'
-        }
-      ]
+    modify: [
+    {
+        type: "responseHeader",
+        name: "accept-ranges",
+        value: 'none'
+    }
 
 You can cache files by setting "cache" property;
 
-      cache: true
+    cache: true
   
-Modify response body;
+Modify response body (use search & replace instead of name/value);
 
-      modify: [
-        {
-          type: "responseBody",
-          search: "https:",
-          replace: "http:"
-        }
-      ]
+	modify: [
+		{
+			type: "responseBody",
+			search: "https:",
+			replace: "http:"
+		}
+	]
     
-There are few additional oprions inside proxy.js;
+There are few additional options inside proxy.js;
 
 Set port and temporary file folder;
 
