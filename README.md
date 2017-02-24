@@ -13,7 +13,7 @@ The proxy gets a rule list as an array. Init the proxy with this array;
 
     var myProxy = new proxy.Proxy(mainRuleList);
 
-Each item in the array can have a "match" field that will match a request specific to that rule item. Multiple matches are ORed. The
+Each item in the array can have a "match" field that will match a request specific to that rule item. Multiple matches are ORed.
 
     {
         //Optional match property
