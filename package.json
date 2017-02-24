@@ -2,10 +2,23 @@
 	"name": "sfproxy",
 	"description": "Simple & fast debugging proxy for node.",
 	"version": "0.0.1",
+	"author": { "name" : "Ali Naci Erdem"
+		, "email" : "anacierdem@gmail.com"
+		, "url" : "http://alinacierdem.com/"
+	},
 	"keywords": ["proxy", "debugging", "simple", "configurable", "fast"],
 	"bugs":{ "url" : "https://github.com/anacierdem/simpleFastProxy/issues"
 			, "email" : "anacierdem@gmail.com"
 	},
 	"homepage": "https://github.com/anacierdem/simpleFastProxy",
-	"license": { "license" : "MIT" }
+	"license": { "license" : "MIT" },
+	"files": {
+		"sfproxy.js"
+	},
+	"main": "sfproxy",
+	"bin" : { "sfproxy" : "./sfproxy.js" },
+	"repository" :
+	{ "type" : "git"
+		, "url" : "https://github.com/anacierdem/simpleFastProxy.git"
+	}
 }
