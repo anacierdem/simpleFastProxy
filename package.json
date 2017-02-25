@@ -1,7 +1,7 @@
 {
 	"name": "sfp",
 	"description": "Simple & fast debugging proxy for node.",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"author": { "name" : "Ali Naci Erdem"
 		, "email" : "anacierdem@gmail.com"
 		, "url" : "http://alinacierdem.com/"
