@@ -8,15 +8,15 @@ var zlib = require('zlib');
 var https = require('https');
 
 
-exports.Proxy = function(mainRuleList) {
+exports.Proxy = function(mainRuleList, options) {
 
-    var SERVER_PORT = 8888;
-    var TMP_FOLDER = "/tmp/";
+    var SERVER_PORT = options.port || 8888;
+    var TMP_FOLDER = options.tempFolder || "/tmp/";
     var REPLACEMENT_PLACEHOLDER_OPEN = "{~{";
     var REPLACEMENT_PLACEHOLDER_CLOSE = "}~}";
 
-    var PROXY_HOST = null;
-    var PROXY_PORT = null;
+    var PROXY_HOST = options.externalProxyHost || null;
+    var PROXY_PORT = options.externalProxyPort || null;
 
     var cachedURLs;
 

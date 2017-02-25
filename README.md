@@ -7,13 +7,13 @@ Currently the project is not well maintained. I'm developing only the features I
 
 Import it;
 
-    var proxy = require('./proxy.js');
+    var sfp = require('sfp');
 
-The proxy gets a rule list as an array. Init the proxy with this array;
+The proxy gets a rule list as an array. Init the proxy with this array and an options object;
 
-    var myProxy = new proxy.Proxy(mainRuleList);
+    var myProxy = new sfp.Proxy(mainRuleList, options);
 
-Each item in the array can have a "match" field that will match a request specific to that rule item. Multiple matches are ORed.
+Each item in the rule list array can have a "match" field that will match a request specific to that rule item. Multiple matches are ORed.
 
     {
         //Optional match property
@@ -150,22 +150,19 @@ Modify response body (use search & replace instead of name/value);
 		}
 	]
     
-## Other Options:
+## Options:
+
+	{
+		port: 8888 //Proxy port (defaults to 8888),
+		tempFolder: "/tmp/", //Temporary file folder (defaults to "/tmp/"),
+		externalProxyHost: null, //Additional proxy host and port (requests will be further forwarded to this endpoint);
+		externalProxyPort: null
+	}
 
 There are few additional options inside proxy.js;
-
-Set port and temporary file folder;
-
-    var SERVER_PORT = 8888;
-    var TMP_FOLDER = "/tmp/";
 
 Set replacement placeholders;
     
     var REPLACEMENT_PLACEHOLDER_OPEN = "{~{";
     var REPLACEMENT_PLACEHOLDER_CLOSE = "}~}";
-
-Set a secondary proxy (requests will be further forwarded to this endpoint);
-
-    var PROXY_HOST = null;
-    var PROXY_PORT = null;
 
