@@ -158,11 +158,3 @@ Modify response body (use search & replace instead of name/value);
 		externalProxyHost: null, //Additional proxy host and port (requests will be further forwarded to this endpoint);
 		externalProxyPort: null
 	}
-
-There are few additional options inside proxy.js;
-
-Set replacement placeholders;
-    
-    var REPLACEMENT_PLACEHOLDER_OPEN = "{~{";
-    var REPLACEMENT_PLACEHOLDER_CLOSE = "}~}";
-
