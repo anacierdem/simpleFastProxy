@@ -7,6 +7,7 @@ var urlParser = require('url');
 var zlib = require('zlib');
 var https = require('https');
 
+var config;
 
 exports.Proxy = function(mainRuleList, options) {
 
@@ -442,5 +443,14 @@ exports.Proxy = function(mainRuleList, options) {
             });
         }
     }
-
 }
+
+process.argv.forEach(function (val, index, array) {
+	if(index == 2) {
+		fs.readFile(val, function (err, data) {
+			if (err) throw err;
+			config = JSON.parse(data);
+			exports.Proxy(config[0], config[1]);
+		});
+	}
+});

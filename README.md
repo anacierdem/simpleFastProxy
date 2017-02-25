@@ -158,3 +158,16 @@ Modify response body (use search & replace instead of name/value);
 		externalProxyHost: null, //Additional proxy host and port (requests will be further forwarded to this endpoint);
 		externalProxyPort: null
 	}
+	
+## CLI
+
+To run the proxy server from the command line, install it globally and pass a json file name. In the json file theremust be an array of two objects. The first one will be used as the mainRuleList and second the options object.
+
+For example;
+
+	[
+		{},
+		{
+			"tempFolder": "/tmp/"
+		}
+	]
