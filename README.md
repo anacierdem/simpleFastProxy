@@ -166,7 +166,7 @@ To run the proxy server from the command line, install it globally and pass a js
 For example;
 
 	[
-		{},
+		[],
 		{
 			"tempFolder": "/tmp/"
 		}
