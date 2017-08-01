@@ -1,4 +1,5 @@
 # simpleFastProxy
+[![npm](https://img.shields.io/npm/dt/sfp.svg)]()
 Nodejs based debugging proxy.
 
 Currently the project is not well maintained. I'm developing only the features I need. I'm open to suggestions and help. The main objective of this project is providing a very flexible and easy to use debugging proxy. No SSL support yet. Later goals include providing a web based UI for inspecting traffic. 
