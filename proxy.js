@@ -1,7 +1,6 @@
 var crypto = require('crypto');
 var fs = require('fs');
 var http = require('http');
-var https = require('https');
 var zlib = require('zlib');
 var urlParser = require('url');
 
@@ -45,7 +44,6 @@ exports.Proxy = function(mainRuleList, options) {
 
         var host = PROXY_HOST || targetHost;
         var port = PROXY_PORT || targetPort;
-
 
         var doCache;
         var doRequest = true;

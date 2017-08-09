@@ -14,16 +14,17 @@ process.argv.forEach(function (val, index, array) {
                 if (err) throw err;
                 config = JSON.parse(data);
                 instance = new Proxy(config[0], config[1]);
+
+                fs.unwatchFile(val);
+                fs.watchFile(val, function()
+                {
+                    console.log("Configuration changed, restarting service.");
+                    instance.stop();
+                    instance = null;
+                    readConfig();
+                });
             });
         }
-
-        fs.watchFile(val, function( )
-        {
-            console.log("Configuration changed, restarting service.");
-            instance.stop();
-            instance = null;
-            readConfig();
-        });
 
         readConfig();
 	}

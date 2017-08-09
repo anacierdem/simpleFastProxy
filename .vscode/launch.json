@@ -9,6 +9,9 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceRoot}/sfp.js",
+            "args": [
+                "${workspaceRoot}/proxy.json"
+            ],
             "cwd": "${workspaceRoot}"
         },
         {
