@@ -1,7 +1,7 @@
 {
 	"name": "sfp",
 	"description": "Simple & fast debugging proxy for node.",
-	"version": "0.0.6",
+	"version": "0.0.8",
 	"author": { "name" : "Ali Naci Erdem"
 		, "email" : "anacierdem@gmail.com"
 		, "url" : "http://alinacierdem.com/"
@@ -13,7 +13,9 @@
 	"homepage": "https://github.com/anacierdem/simpleFastProxy",
 	"license": "MIT",
 	"files": [
-		"sfp.js"
+		"sfp.js",
+		"proxy.js",
+		"drainedWriter.js"
 	],
 	"main": "sfp",
 	"bin" : { "sfp" : "./sfp.js" },
