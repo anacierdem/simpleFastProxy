@@ -165,7 +165,7 @@ Modify response body (use search & replace instead of name/value);
 		"rootCAPass": "XXXX" //root CA passphrase
 	}
 	
-Note: To be able to use SSL features, openSSL must be installed on your system. (https://slproweb.com/products/Win32OpenSSL.html for windows binaries)
+Note: To be able to use SSL features, openSSL must be installed on your system and available on the command line/shell. (https://wiki.openssl.org/index.php/Binaries for binaries)
 	
 ## CLI
 
