@@ -165,6 +165,8 @@ Modify response body (use search & replace instead of name/value);
 		"rootCAPass": "XXXX" //root CA passphrase
 	}
 	
+Note: To be able to use SSL features, openSSL must be installed on your system. (http://gnuwin32.sourceforge.net/packages/openssl.htm for windows binaries)
+	
 ## CLI
 
 To run the proxy server from the command line, install it globally and pass a json file name. In the json file theremust be an array of two objects. The first one will be used as the mainRuleList and second the options object.
