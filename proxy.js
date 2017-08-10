@@ -1,8 +1,12 @@
 var crypto = require('crypto');
 var fs = require('fs');
+var net = require('net');
 var http = require('http');
+var https = require('https');
 var zlib = require('zlib');
 var urlParser = require('url');
+
+var pem = require('pem');
 
 var DrainedWriter = require('./drainedWriter');
 
@@ -17,6 +21,7 @@ exports.Proxy = function(mainRuleList, options) {
 
     var cachedURLs;
     var server = null;
+    var httpsServer = null;
 
     if (!fs.existsSync(TMP_FOLDER + 'cachedURLs.json')) {
         fs.writeFile(TMP_FOLDER + 'cachedURLs.json', "{}");
@@ -29,11 +34,61 @@ exports.Proxy = function(mainRuleList, options) {
     });
 
     function startServer() {
-        server = http.createServer(serverHandler).listen(SERVER_PORT);
+        server = http.createServer().listen(SERVER_PORT);
+        
+        server.on("connect", function(req, cltSocket, head) {
+            var host = req.url.split(":")[0];
+            var port = req.url.split(":")[1];
+
+            if(options.interceptSSL) {
+                var opts = {
+                    days: 1,
+                    serviceKey: fs.readFileSync(options.rootCAKey).toString(),
+                    serviceCertificate: fs.readFileSync(options.rootCACert).toString(),
+                    serviceKeyPassword: options.rootCAPass,
+                    altNames:[host]
+                };
+
+                pem.createCertificate(opts, function(err, keys) {
+                    httpsServer = https.createServer({
+                        key: keys.clientKey,
+                        cert: keys.certificate,
+                        passphrase: options.rootCAPass
+                    }, serverHandler.bind(this, "https")).listen(0, 'localhost');
+
+                    // TODO: directly write to https server
+                    httpsServer.on("listening", function() {
+                        if(!httpsServer.listening)
+                            return;
+                        var addr = httpsServer.address()
+                        var srvSocket = net.createConnection(addr.port, addr.address, function() {
+                            cltSocket.write('HTTP/1.1 200 Connection Established\r\n' +
+                                    'Proxy-agent: Node.js-simpleFastProxy\r\n' +
+                                    '\r\n');
+                            srvSocket.write(head)
+                            srvSocket.pipe(cltSocket);
+                            cltSocket.pipe(srvSocket);
+                        });
+                    })
+                })
+            } else {
+                //Direct tunneling
+                var srvSocket = net.createConnection(port, host, function() {
+                    cltSocket.write('HTTP/1.1 200 Connection Established\r\n' +
+                            'Proxy-agent: Node.js-simpleFastProxy\r\n' +
+                            '\r\n');
+                    srvSocket.write(head)
+                    srvSocket.pipe(cltSocket);
+                    cltSocket.pipe(srvSocket);
+                });
+            }
+        });
+
+        server.on("request", serverHandler.bind(this, "http"));
         console.log('Server started')
     }
 
-    function serverHandler(request, response) {
+    function serverHandler(protocol, request, response) {
         var parsedURL = urlParser.parse(request.url);
 
         var headerHost = request.headers['host'];
@@ -43,7 +98,7 @@ exports.Proxy = function(mainRuleList, options) {
         var targetPort = parsedURL.port;
 
         var host = PROXY_HOST || targetHost;
-        var port = PROXY_PORT || targetPort;
+        var port = PROXY_PORT || targetPort || (protocol == "https" ? 443 : 80);
 
         var doCache;
         var doRequest = true;
@@ -149,7 +204,7 @@ exports.Proxy = function(mainRuleList, options) {
             }
         }
 
-        console.log("REQUEST: " + targetHost + " (" + request.url + ")");
+        console.log("REQUEST ("+protocol+"): " + targetHost + " (" + request.url + ")");
 
         function substituteValue(currentReplacement) {
             var splitReplacement = currentReplacement.split(".");
@@ -234,14 +289,19 @@ exports.Proxy = function(mainRuleList, options) {
             var tmpRequestHeaders = JSON.parse(JSON.stringify(request.headers));
             manipulateRequest(tmpRequestHeaders);
 
-            var proxy_request = http.request({
+            if(protocol == "https") {
+                var agent = https;
+            } else {
+                var agent = http;
+            }
+
+            var proxy_request = agent.request({
                 port: port,
                 host: host,
                 method: request.method,
                 headers: tmpRequestHeaders,
                 path: parsedURL.pathname + (parsedURL.search ? parsedURL.search : "")
             });
-
             proxy_request.addListener('response', function (proxy_response) {
                 var shouldWaitWholeResponse = manipulateResponse(proxy_response.headers);
 

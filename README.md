@@ -155,10 +155,14 @@ Modify response body (use search & replace instead of name/value);
 ## Options:
 
 	{
-		port: 8888 //Proxy port (defaults to 8888),
-		tempFolder: "/tmp/", //Temporary file folder (defaults to "/tmp/"),
-		externalProxyHost: null, //Additional proxy host and port (requests will be further forwarded to this endpoint);
-		externalProxyPort: null
+		"port": 8888 //Proxy port (defaults to 8888),
+		"tempFolder": "/tmp/", //Temporary file folder (defaults to "/tmp/"),
+		"externalProxyHost": null, //Additional proxy host and port (requests will be further forwarded to this endpoint);
+		"externalProxyPort": null,
+		"interceptSSL": true, //Should the proxy intercept HTTPS requests? Below options are necesseray if this is true.
+		"rootCAKey": "path/to/rootCA/key", //root CA key file (.key)
+		"rootCACert": "path/to/rootCA/cert", //root CA certificate file (.pem)
+		"rootCAPass": "XXXX" //root CA passphrase
 	}
 	
 ## CLI

@@ -1,26 +1,39 @@
 {
-	"name": "sfp",
-	"description": "Simple & fast debugging proxy for node.",
-	"version": "0.0.9",
-	"author": { "name" : "Ali Naci Erdem"
-		, "email" : "anacierdem@gmail.com"
-		, "url" : "http://alinacierdem.com/"
-	},
-	"keywords": ["proxy", "debugging", "simple", "configurable", "fast"],
-	"bugs":{ "url" : "https://github.com/anacierdem/simpleFastProxy/issues"
-			, "email" : "anacierdem@gmail.com"
-	},
-	"homepage": "https://github.com/anacierdem/simpleFastProxy",
-	"license": "MIT",
-	"files": [
-		"sfp.js",
-		"proxy.js",
-		"drainedWriter.js"
-	],
-	"main": "sfp",
-	"bin" : { "sfp" : "./sfp.js" },
-	"repository" :
-	{ "type" : "git"
-		, "url" : "https://github.com/anacierdem/simpleFastProxy.git"
-	}
+  "name": "sfp",
+  "description": "Simple & fast debugging proxy for node.",
+  "version": "0.0.10",
+  "author": {
+    "name": "Ali Naci Erdem",
+    "email": "anacierdem@gmail.com",
+    "url": "http://alinacierdem.com/"
+  },
+  "keywords": [
+    "proxy",
+    "debugging",
+    "simple",
+    "configurable",
+    "fast"
+  ],
+  "bugs": {
+    "url": "https://github.com/anacierdem/simpleFastProxy/issues",
+    "email": "anacierdem@gmail.com"
+  },
+  "homepage": "https://github.com/anacierdem/simpleFastProxy",
+  "license": "MIT",
+  "files": [
+    "sfp.js",
+    "proxy.js",
+    "drainedWriter.js"
+  ],
+  "main": "sfp",
+  "bin": {
+    "sfp": "./sfp.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anacierdem/simpleFastProxy.git"
+  },
+  "dependencies": {
+    "pem": "^1.9.7"
+  }
 }
