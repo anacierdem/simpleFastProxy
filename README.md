@@ -161,6 +161,8 @@ You may use a js regular expression on search. For example to replace the whole 
 			replace: "Hello World"
 		}
 	]
+	
+Note: Only gzipped bodies can be manipulated. So it is advised to inject an Accept-Encoding header to the requests.
 
 ## Options:
 
