@@ -172,7 +172,8 @@ exports.Proxy = function(mainRuleList, options) {
                                 }
                                 break;
                             case 'url':
-                                if (request.url.indexOf(currentMatch.value) < 0) {
+                                var actualURL = protocol == "https" ? ("https://" + targetHost + request.url) : request.url;
+                                if (actualURL.indexOf(currentMatch.value) < 0) {
                                     isMatched = false;
                                     break matchLoop;
                                 }
@@ -324,6 +325,32 @@ exports.Proxy = function(mainRuleList, options) {
                 });
 
                 proxy_response.on('end', function () {
+                    var rawDataReady = function() {
+                        if (doCache) {
+                            function finishCacheOperation() {
+                                writer.end();
+
+                                cachedURLs[filename] = {};
+                                cachedURLs[filename].statusCode = proxy_response.statusCode;
+                                cachedURLs[filename].headers = proxy_response.headers;
+
+                                fs.writeFile(TMP_FOLDER + "cachedURLs.json", JSON.stringify(cachedURLs));
+
+                                console.log("CACHED: " + targetHost + " (" + request.url + ")");
+                            }
+
+                            dWriter.end(finishCacheOperation);
+                        }
+
+                        if (shouldWaitWholeResponse) {
+                            proxy_response.headers["content-length"] = rawData.length;
+                            response.writeHead(proxy_response.statusCode, proxy_response.headers);
+                            response.write(rawData);
+                        }
+
+                        response.end();
+                    }
+
                     if (isMatched && currentRule.modify) {
                         for (var modifier = 0; modifier < currentRule.modify.length; modifier++) {
                             var currentModifier = currentRule.modify[modifier];
@@ -336,43 +363,23 @@ exports.Proxy = function(mainRuleList, options) {
                                         zlib.unzip(rawData, function (err, buffer) {
                                             if (!err) {
                                                 rawData = buffer;
+
+                                                var newValue = replacePlaceHolders(currentModifier.replace);
+                                                rawData = rawData.toString('utf8');
+                                                rawData = rawData.replace(new RegExp(currentModifier.search), newValue);
+                                                proxy_response.headers['content-encoding'] = "";
+                                                rawDataReady();
                                             } else {
                                                 // handle error
                                             }
                                         });
                                     }
-
-                                    var newValue = replacePlaceHolders(currentModifier.replace);
-                                    rawData = rawData.toString('utf8');
-                                    rawData = rawData.split(currentModifier.search).join(newValue);
                                     break;
                             }
                         }
+                    } else {
+                        rawDataReady();
                     }
-
-                    if (doCache) {
-                        function finishCacheOperation() {
-                            writer.end();
-
-                            cachedURLs[filename] = {};
-                            cachedURLs[filename].statusCode = proxy_response.statusCode;
-                            cachedURLs[filename].headers = proxy_response.headers;
-
-                            fs.writeFile(TMP_FOLDER + "cachedURLs.json", JSON.stringify(cachedURLs));
-
-                            console.log("CACHED: " + targetHost + " (" + request.url + ")");
-                        }
-
-                        dWriter.end(finishCacheOperation);
-                    }
-
-                    if (shouldWaitWholeResponse) {
-                        proxy_response.headers["content-length"] = rawData.length;
-                        response.writeHead(proxy_response.statusCode, proxy_response.headers);
-                        response.write(rawData);
-                    }
-
-                    response.end();
                 });
             });
 
