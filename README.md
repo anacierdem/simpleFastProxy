@@ -3,7 +3,7 @@
 
 Nodejs based debugging proxy.
 
-Currently I'm developing only the features I need. I'm open to suggestions and help. The main objective of this project is providing a very flexible and easy to use debugging proxy. Later goals include providing a web based UI for inspecting traffic. 
+Currently I'm developing only the features I need. I'm open to suggestions and help. The main objective of this project is providing a very flexible and easy to use debugging proxy. Later goals include providing a web based UI for inspecting traffic.
 
 # Usage
 
@@ -131,11 +131,11 @@ Remove headers;
     
 Remove accept-ranges response header if a range request arrives;
 
-    modify: [
+    "modify": [
     {
         type: "responseHeader",
         name: "accept-ranges",
-        value: 'none'
+        value: "none"
     }
 
 You can cache files by setting "cache" property;
@@ -151,7 +151,17 @@ Modify response body (use search & replace instead of name/value);
 			replace: "http:"
 		}
 	]
-    
+
+You may use a js regular expression on search. For example to replace the whole response body;
+
+	modify: [
+		{
+			type: "responseBody",
+			search: "^[^]*",
+			replace: "Hello World"
+		}
+	]
+
 ## Options:
 
 	{
@@ -169,7 +179,7 @@ Note: To be able to use SSL features, openSSL must be installed on your system a
 	
 ## CLI
 
-To run the proxy server from the command line, install it globally and pass a json file name. In the json file theremust be an array of two objects. The first one will be used as the mainRuleList and second the options object.
+To run the proxy server from the command line, install it globally (`npm install -g sfp`) and pass a json file name. In the json file theremust be an array of two objects. The first one will be used as the mainRuleList and second the options object.
 
 For example;
 
