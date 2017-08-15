@@ -161,6 +161,8 @@ You may use a js regular expression on search. For example to replace the whole 
 			replace: "Hello World"
 		}
 	]
+	
+Note: Only gzipped bodies can be manipulated. So it is advised to inject an Accept-Encoding header to the requests.
 
 ## Options:
 
@@ -179,7 +181,7 @@ Note: To be able to use SSL features, openSSL must be installed on your system a
 	
 ## CLI
 
-To run the proxy server from the command line, install it globally (`npm install -g sfp`) and pass a json file name. In the json file theremust be an array of two objects. The first one will be used as the mainRuleList and second the options object.
+To run the proxy server from the command line, install it globally (`npm install -g sfp`) and pass a json file name. In the json file there must be an array of two items. The first array will be used as the mainRuleList and second one as the options object.
 
 For example;
 
