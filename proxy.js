@@ -108,7 +108,7 @@ exports.Proxy = function(mainRuleList, options) {
         var matchList = new Array(mainRuleList.length);
 
         function manipulateRequest(requestHeaders) {
-            var shouldWaitWholeResponse = false;
+            var waitingForBodyManipulation = false;
             for (var i = 0; i < mainRuleList.length; i++) {
                 var currentRule = mainRuleList[i];
                 var isMatched = matchList[i]; //assume previous value
@@ -152,7 +152,7 @@ exports.Proxy = function(mainRuleList, options) {
                     }
                 }
             }
-            return shouldWaitWholeResponse;
+            return waitingForBodyManipulation;
         }
 
         //On pre request
@@ -236,7 +236,7 @@ exports.Proxy = function(mainRuleList, options) {
         }
 
         function manipulateResponse(responseHeaders) {
-            var shouldWaitWholeResponse = false;
+            var waitingForBodyManipulation = false;
             for (var i = 0; i < mainRuleList.length; i++) {
                 var currentRule = mainRuleList[i];
                 var isMatched = matchList[i]; //assume previous value
@@ -266,7 +266,7 @@ exports.Proxy = function(mainRuleList, options) {
                                 responseHeaders[currentModifier.name] = newValue;
                                 break;
                             case 'responseBody':
-                                shouldWaitWholeResponse = true;
+                                waitingForBodyManipulation = true;
                                 break;
                         }
                     }
@@ -283,7 +283,7 @@ exports.Proxy = function(mainRuleList, options) {
                     }
                 }
             }
-            return shouldWaitWholeResponse;
+            return waitingForBodyManipulation;
         }
 
         var doNetworkRequest = function () {
@@ -304,16 +304,16 @@ exports.Proxy = function(mainRuleList, options) {
                 path: parsedURL.pathname + (parsedURL.search ? parsedURL.search : "")
             });
             proxy_request.addListener('response', function (proxy_response) {
-                var shouldWaitWholeResponse = manipulateResponse(proxy_response.headers);
+                var waitingForBodyManipulation = manipulateResponse(proxy_response.headers);
 
-                if (!shouldWaitWholeResponse) {
+                if (!waitingForBodyManipulation) {
                     response.writeHead(proxy_response.statusCode, proxy_response.headers);
                 }
 
                 var rawData = [];
 
                 proxy_response.on('data', function (chunk) {
-                    if (shouldWaitWholeResponse) {
+                    if (waitingForBodyManipulation) {
                         rawData.push(chunk);
                     } else {
                         response.write(chunk);
@@ -325,7 +325,7 @@ exports.Proxy = function(mainRuleList, options) {
                 });
 
                 proxy_response.on('end', function () {
-                    var rawDataReady = function() {
+                    var finalDataReady = function() {
                         if (doCache) {
                             function finishCacheOperation() {
                                 writer.end();
@@ -342,7 +342,7 @@ exports.Proxy = function(mainRuleList, options) {
                             dWriter.end(finishCacheOperation);
                         }
 
-                        if (shouldWaitWholeResponse) {
+                        if (waitingForBodyManipulation) {
                             proxy_response.headers["content-length"] = rawData.length;
                             response.writeHead(proxy_response.statusCode, proxy_response.headers);
                             response.write(rawData);
@@ -351,34 +351,42 @@ exports.Proxy = function(mainRuleList, options) {
                         response.end();
                     }
 
-                    if (isMatched && currentRule.modify) {
-                        for (var modifier = 0; modifier < currentRule.modify.length; modifier++) {
-                            var currentModifier = currentRule.modify[modifier];
-                            switch (currentModifier.type) {
-                                case 'responseBody':
-                                    rawData = Buffer.concat(rawData);
+                    if (waitingForBodyManipulation) {
+                        var manipulateBody = function() {
+                            for (var modifier = 0; modifier < currentRule.modify.length; modifier++) {
+                                var currentModifier = currentRule.modify[modifier];
+                                switch (currentModifier.type) {
+                                    case 'responseBody':
+                                        rawData = Buffer.concat(rawData);
 
-                                    //unzip if necessary
-                                    if (proxy_response.headers['content-encoding'] == "gzip") {
-                                        zlib.unzip(rawData, function (err, buffer) {
-                                            if (!err) {
-                                                rawData = buffer;
-
-                                                var newValue = replacePlaceHolders(currentModifier.replace);
-                                                rawData = rawData.toString('utf8');
-                                                rawData = rawData.replace(new RegExp(currentModifier.search), newValue);
-                                                proxy_response.headers['content-encoding'] = "";
-                                                rawDataReady();
-                                            } else {
-                                                // handle error
-                                            }
-                                        });
-                                    }
-                                    break;
+                                        var newValue = replacePlaceHolders(currentModifier.replace);
+                                        rawData = rawData.toString('utf8');
+                                        rawData = rawData.replace(new RegExp(currentModifier.search), newValue);
+                                        proxy_response.headers['content-encoding'] = "";
+                                        break;
+                                }
                             }
                         }
+
+                        //unzip if necessary
+                        if (proxy_response.headers['content-encoding'] == "gzip") {
+                            zlib.unzip(rawData, function (err, buffer) {
+                                if (!err) {
+                                    proxy_response.headers['content-encoding'] = "";
+                                    manipulateBody();
+                                    finalDataReady();
+                                } else {
+                                    finalDataReady();
+                                    // handle error
+                                }
+                            });
+                        } else {
+                            manipulateBody();
+                            finalDataReady();
+                        }
                     } else {
-                        rawDataReady();
+                        //No need for decoding
+                        finalDataReady();
                     }
                 });
             });
