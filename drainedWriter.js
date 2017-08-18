@@ -1,4 +1,4 @@
-exports.DrainedWriter = function(writer) {
+var DrainedWriter = function(writer) {
     var dataBuffer = [];
     var currentSegment = 0;
     var writtenDataLength = 0;
@@ -59,3 +59,5 @@ exports.DrainedWriter = function(writer) {
         }
     }
 }
+
+module.exports = DrainedWriter;
